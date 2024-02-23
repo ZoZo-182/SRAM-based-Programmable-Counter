@@ -108,64 +108,65 @@ architecture Structural of top_level is
 	end component;	
 	
 	component SystemModule is
-    Port ( clk : in STD_LOGIC;        --clock_50
-            state: in STD_LOGIC_VECTOR(3 downto 0);        --QState 4 bits
-           -- Inputs if programming mode
-           in_data_prog1 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
-           in_data_prog2 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
-           in_data_prog3 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
-           in_data_prog4 : in STD_LOGIC_VECTOR (3 downto 0);        --keypad data for data??
-           in_addr_prog1 : in STD_LOGIC_VECTOR (3 downto 0);        --keypad data for address??
-           in_addr_prog2 : in STD_LOGIC_VECTOR (3 downto 0);        --Keypad data for address??
-            -- inputs if operating mode. 
-           in_data_oper1 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(3 downto 0)
-           in_data_oper2 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(7 downto 4)
-           in_data_oper3 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(11 downto 8)
-           in_data_oper4 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(15 downto 12)
-           in_addr_oper1 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter first 4 digits
-           in_addr_oper2 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter second 4 digits
-           -- Outputs for seven-segment displays
-           display_out1 : out STD_LOGIC_VECTOR (6 downto 0);        --connect to first 7seg LED
-           display_out2 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to sec 7seg LED
-           display_out3 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to third 7seg LED
-           display_out4 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to four 7seg LED
-           display_out5 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to fifth 7seg LED
-           display_out6 : out STD_LOGIC_VECTOR (6 downto 0));        --connect to sixth 7seg LED
-end component;
+    		Port( 
+	    		clk : in STD_LOGIC;        --clock_50
+            		state: in STD_LOGIC_VECTOR(3 downto 0);        --QState 4 bits
+           		-- Inputs if programming mode
+           		in_data_prog1 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
+          		in_data_prog2 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
+           		in_data_prog3 : in STD_LOGIC_VECTOR (3 downto 0);         --keypad data for data??
+           		in_data_prog4 : in STD_LOGIC_VECTOR (3 downto 0);        --keypad data for data??
+           		in_addr_prog1 : in STD_LOGIC_VECTOR (3 downto 0);        --keypad data for address??
+           		in_addr_prog2 : in STD_LOGIC_VECTOR (3 downto 0);        --Keypad data for address??
+            		-- inputs if operating mode. 
+           		in_data_oper1 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(3 downto 0)
+           		in_data_oper2 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(7 downto 4)
+           		in_data_oper3 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(11 downto 8)
+           		in_data_oper4 : in STD_LOGIC_VECTOR (3 downto 0);        --SRAM(15 downto 12)
+           		in_addr_oper1 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter first 4 digits
+           		in_addr_oper2 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter second 4 digits
+           		-- Outputs for seven-segment displays
+           		display_out1 : out STD_LOGIC_VECTOR (6 downto 0);        --connect to first 7seg LED
+           		display_out2 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to sec 7seg LED
+           		display_out3 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to third 7seg LED
+           		display_out4 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to four 7seg LED
+           		display_out5 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to fifth 7seg LED
+           		display_out6 : out STD_LOGIC_VECTOR (6 downto 0));        --connect to sixth 7seg LED
+	end component;
 
-component ShiftRegister is
-    Port (
-        clk : in STD_LOGIC;
-        reset : in STD_LOGIC;
-	shift_times: INTEGER range 0 to 4;
-        clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
-        clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
-        data_in : in STD_LOGIC_VECTOR (3 downto 0);
-        data_out : out STD_LOGIC_VECTOR (15 downto 0));
-end component;
+	component ShiftRegister is
+    		Port(
+       			clk : in STD_LOGIC;
+        		reset : in STD_LOGIC;
+			shift_times: INTEGER range 0 to 4;
+        		clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
+        		clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
+        		data_in : in STD_LOGIC_VECTOR (3 downto 0);
+        		data_out : out STD_LOGIC_VECTOR (15 downto 0));
+	end component;
 
-component ShiftRegisterADDR is
-    Port (
-        clk : in STD_LOGIC;
-        reset : in STD_LOGIC;
-		  shift_times: INTEGER range 0 to 4;
-        clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
-        clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
-        data_in : in STD_LOGIC_VECTOR (3 downto 0);
-        data_out : out STD_LOGIC_VECTOR (7 downto 0));
-end component;
+	component ShiftRegisterADDR is
+    		Port (
+        		clk : in STD_LOGIC;
+        		reset : in STD_LOGIC;
+		  	shift_times: INTEGER range 0 to 4;
+        		clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
+        		clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
+        		data_in : in STD_LOGIC_VECTOR (3 downto 0);
+        		data_out : out STD_LOGIC_VECTOR (7 downto 0));
+	end component;
 
 
-component Keypad_Controller is
-    Port (	
-        Clk: in  std_logic;	 
-	     iRows :in std_logic_vector(4 downto 0);
-	     Cols  : buffer std_logic_vector(3 downto 0);		  
-		  OutputData : out std_logic_vector(4 downto 0);
-		  clockEN5ms_out: out STD_LOGIC;
-		  pulse_5ms  : buffer std_logic;
-		  pulse_20ns : out std_logic);
-end component;
+	component Keypad_Controller is
+    		Port (	
+        		Clk: in  std_logic;	 
+	     		iRows :in std_logic_vector(4 downto 0);
+	     		Cols  : buffer std_logic_vector(3 downto 0);		  
+		  	OutputData : out std_logic_vector(4 downto 0);
+		  	clockEN5ms_out: out STD_LOGIC;
+		  	pulse_5ms  : buffer std_logic;
+		  	pulse_20ns : out std_logic);
+	end component;
 			
 -- signals ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--universal reset signals
