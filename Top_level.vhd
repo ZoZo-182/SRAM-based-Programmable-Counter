@@ -63,39 +63,30 @@ architecture Structural of top_level is
 	component univ_bin_counter is
 		generic(N: integer := 8; N2: integer := 255; N1: integer := 0);
 		port(
-			clk, reset					: in std_logic;
+			clk, reset		: in std_logic;
 			syn_clr, load, en, up	: in std_logic;
-			clk_en 						: in std_logic := '1';			
-			d								: in std_logic_vector(N-1 downto 0);
-			max_tick, min_tick		: out std_logic;
-			q								: out std_logic_vector(N-1 downto 0)		
-		);
+			clk_en 			: in std_logic := '1';			
+			d			: in std_logic_vector(N-1 downto 0);
+			max_tick, min_tick	: out std_logic;
+			q			: out std_logic_vector(N-1 downto 0));
 	end component;
 
 	component Rom IS
-		PORT
-		(
+		PORT(
 			address		: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
-			clock			: IN STD_LOGIC  := '1';
-			q				: OUT STD_LOGIC_VECTOR (15 DOWNTO 0)
-		);
+			clock		: IN STD_LOGIC  := '1';
+			q		: OUT STD_LOGIC_VECTOR (15 DOWNTO 0));
 	END component;
 
 	component clk_enabler is
 		 GENERIC (
 			 CONSTANT cnt_max : integer := 49999999);      --  1.0 Hz 	
 		 PORT(	
-			clock						: in std_logic;	 
-			clk_en					: out std_logic
-		);
+			clock		: in std_logic;	 
+			clk_en		: out std_logic);
 	end component;
 	
-
-	
-	
-	
-		component SRAM_Controller is
-		
+	component SRAM_Controller is
 		port(
 			clk: in std_logic;
 			reset: in std_logic;
@@ -113,8 +104,7 @@ architecture Structural of top_level is
 			lb: out std_logic;	--tie to '0' in top level
 			weOUT: out std_logic;
 			DoesWORK: out std_logic_vector(3 downto 0);
-			oeOUT: out std_logic
-		);
+			oeOUT: out std_logic);
 	end component;	
 	
 	component SystemModule is
@@ -135,25 +125,23 @@ architecture Structural of top_level is
            in_addr_oper1 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter first 4 digits
            in_addr_oper2 : in STD_LOGIC_VECTOR (3 downto 0);        -- counter second 4 digits
            -- Outputs for seven-segment displays
-            display_out1 : out STD_LOGIC_VECTOR (6 downto 0);        --connect to first 7seg LED
-            display_out2 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to sec 7seg LED
-            display_out3 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to third 7seg LED
-            display_out4 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to four 7seg LED
-            display_out5 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to fifth 7seg LED
-            display_out6 : out STD_LOGIC_VECTOR (6 downto 0)         --connect to sixth 7seg LED
-);
+           display_out1 : out STD_LOGIC_VECTOR (6 downto 0);        --connect to first 7seg LED
+           display_out2 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to sec 7seg LED
+           display_out3 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to third 7seg LED
+           display_out4 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to four 7seg LED
+           display_out5 : out STD_LOGIC_VECTOR (6 downto 0);         --connect to fifth 7seg LED
+           display_out6 : out STD_LOGIC_VECTOR (6 downto 0));        --connect to sixth 7seg LED
 end component;
 
 component ShiftRegister is
     Port (
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
-		  shift_times: INTEGER range 0 to 4;
+	shift_times: INTEGER range 0 to 4;
         clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
         clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
         data_in : in STD_LOGIC_VECTOR (3 downto 0);
-        data_out : out STD_LOGIC_VECTOR (15 downto 0)
-    );
+        data_out : out STD_LOGIC_VECTOR (15 downto 0));
 end component;
 
 component ShiftRegisterADDR is
@@ -164,8 +152,7 @@ component ShiftRegisterADDR is
         clock_pulse_5ms : in STD_LOGIC; -- 5ms clock pulse
         clock_en_5ms : in STD_LOGIC; -- Clock enable of 5ms
         data_in : in STD_LOGIC_VECTOR (3 downto 0);
-        data_out : out STD_LOGIC_VECTOR (7 downto 0)
-    );
+        data_out : out STD_LOGIC_VECTOR (7 downto 0));
 end component;
 
 
@@ -177,8 +164,7 @@ component Keypad_Controller is
 		  OutputData : out std_logic_vector(4 downto 0);
 		  clockEN5ms_out: out STD_LOGIC;
 		  pulse_5ms  : buffer std_logic;
-		  pulse_20ns : out std_logic		  
-    );
+		  pulse_20ns : out std_logic);
 end component;
 			
 -- signals ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -190,6 +176,8 @@ end component;
 	--clock enables
 	signal clock_enable_60ns		: std_logic;
 	signal clock_enable_1sec		: std_logic;
+	signal clockEN5ms_sig,clockPulse5ms_sig,pulse_20ns_sig 	:  std_logic;
+	signal clockEN5ms_sig_data,clockEN5ms_sig_addr		: std_logic;
 
 	--univ counter and rom outputs 
 	signal Qc				: std_logic_vector(7 downto 0); -- counter output
@@ -210,21 +198,19 @@ end component;
 	signal mux_output_datain		: std_logic_vector(15 downto 0);
 	signal mux_output_addrin		: std_logic_vector(7 downto 0);
 	signal Qstate				: std_logic_vector(3 downto 0);
-	signal GLED_sig: std_logic;
+	signal GLED_sig				: std_logic;
 
 	signal OUTPUT_DATA_addrShift, OUTPUT_DATA_Datashift	: std_logic_vector(3 downto 0):= "0000";
-	
+	signal OUTPUT_DATA 			: std_logic_vector(4 downto 0);
+
 	signal sig_ceOUT, sig_ub, sig_lb	: std_logic;
 	
 	signal AFTERSHIFT_DATA 			: std_LOGIC_VECTOR(15 downto 0);
 	signal AFTERSHIFT_ADDR			: std_LOGIC_VECTOR(7 downto 0);
-	signal clockEN5ms_sig,clockPulse5ms_sig,pulse_20ns_sig :  std_logic;
-	signal OUTPUT_DATA : std_logic_vector(4 downto 0);
-	signal clockEN5ms_sig_data,clockEN5ms_sig_addr: std_logic;
 
-	signal SRAM_addr2SRAM_sig: std_logic_vector(19 downto 0);
+	signal SRAM_addr2SRAM_sig		: std_logic_vector(19 downto 0);
 	
-
+-- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	begin
 		
 	Counter_Reset <= not KEY0_db or reset_d; --universal reset logic
@@ -240,7 +226,7 @@ end component;
 	OP_or_PROG<=GLED_sig;
 
 -- multiplexers ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------		
-	-- rw mux
+	--rw mux
 	mux_select_RW <= Qstate(3 downto 2);
 	process(mux_select_RW,OUTPUT_DATA) 
 	begin 
@@ -262,7 +248,7 @@ end component;
        		end case;
 	end process;
 	
-	-- up mux
+	--up mux
 	mux_select_up <= Qstate(3 downto 2); -- select based on state(3) and state(2)
 	process(mux_select_up, Qstate(1))
 	begin
@@ -274,7 +260,7 @@ end component;
    		end case;
 	end process;
 	
-	-- en mux
+	--en mux
 	mux_select_en <= Qstate(3 downto 2);
 	process(mux_select_en, Qstate(0))
 	begin
@@ -286,7 +272,7 @@ end component;
     		end case;
 	end process;
 	
-	-- clock_en mux
+	--clock_en mux
 	mux_select_clken <= Qstate(3 downto 2);
 	process(mux_select_clken) 
 	begin 
@@ -300,7 +286,7 @@ end component;
     		end case;
 	end process;
 	
-	-- pulse mux not used until connected to SRAM
+	--pulse mux not used until connected to SRAM
 	mux_select_pulse <= Qstate(3 downto 2);
 	process(mux_select_pulse)
 	begin 
@@ -316,7 +302,7 @@ end component;
     		end case;
 	end process;
 	
-	-- reading to SRAM from rom or keypad
+	--reading to SRAM from rom or keypad
 	mux_select_datain <= Qstate(3 downto 2);
 	process(mux_select_datain) 
 	begin 
@@ -381,8 +367,7 @@ end component;
 			d		=> (others => '0'),
 			max_tick	=> open, 
 			min_tick 	=> open,
-			q		=> Qc 
-		);
+			q		=> Qc);
 
 	inst_KEY0: btn_debounce_toggle
 		GENERIC MAP( CNTR_MAX => X"FFFF") -- use X"FFFF" for implementation
